@@ -5,9 +5,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './user/auth/auth.module';
 import { ShowsModule } from './shows/shows.module';
 import { Show } from './shows/entities/show.entity';
+import { ReservationModule } from './reservation/reservation.module';
+import { ShowSeat } from './shows/entities/show-seat.entity';
+import { ShowTime } from './shows/entities/show-time.entity';
+import { Reservation } from './reservation/entities/reservation.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -20,7 +24,7 @@ const typeOrmModuleOptions = {
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
-    entities: [User, Show],
+    entities: [User, Show, ShowSeat, ShowTime, Reservation],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
@@ -45,6 +49,7 @@ const typeOrmModuleOptions = {
     UserModule,
     AuthModule,
     ShowsModule,
+    ReservationModule,
   ],
   controllers: [],
   providers: [],

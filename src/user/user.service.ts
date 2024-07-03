@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-
+import { Role } from './types/userRole.type';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -24,11 +24,16 @@ export class UserService {
     return await this.userRepository.findOneBy({ email });
   }
 
-  async findOne(userId: number) {
-    return await this.userRepository.findOneBy({ userId });
+  async findOne(user_id: number) {
+    return await this.userRepository.findOneBy({ user_id });
   }
 
-  async register(email: string, password: string, nick_name: string) {
+  async register(
+    email: string,
+    password: string,
+    nick_name: string,
+    role: Role,
+  ) {
     const existingUser = await this.findByEmail(email);
     if (existingUser) {
       throw new ConflictException(
@@ -41,6 +46,7 @@ export class UserService {
       email,
       password: hashedPassword,
       nick_name,
+      role,
     });
     delete newUser.password;
     return { newUser };
@@ -48,7 +54,7 @@ export class UserService {
 
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({
-      select: ['userId', 'email', 'password'],
+      select: ['user_id', 'email', 'password'],
       where: { email },
     });
     if (_.isNil(user)) {
@@ -59,7 +65,7 @@ export class UserService {
       throw new UnauthorizedException('비밀번호를 확인해주세요.');
     }
 
-    const payload = { email, userId: user.userId };
+    const payload = { email, userId: user.user_id };
     return {
       status: 200,
       userId: payload.userId,

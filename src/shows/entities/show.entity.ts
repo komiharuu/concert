@@ -1,15 +1,31 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Category } from '../types/show.type';
+import { User } from 'src/user/entities/user.entity';
+import { ShowSeat } from './show-seat.entity';
+import { ShowTime } from './show-time.entity';
+import { Reservation } from 'src/reservation/entities/reservation.entity';
 
 @Entity({
   name: 'shows',
 })
 export class Show {
   @PrimaryGeneratedColumn()
-  showId: number;
+  show_id: number;
 
-  @Column({ type: 'varchar', unique: true, nullable: false })
-  showname: string;
+  @Column()
+  user_id: number;
+
+  @Column({ type: 'varchar', nullable: false })
+  show_name: string;
 
   @Column({ type: 'text', nullable: false })
   explain: string;
@@ -17,7 +33,6 @@ export class Show {
   @Column({
     type: 'enum',
     enum: Category,
-    default: Category.CONCERT,
     nullable: false,
   })
   category: Category;
@@ -25,16 +40,31 @@ export class Show {
   @Column({ type: 'varchar', nullable: false })
   location: string;
 
-  @Column({ type: 'int', nullable: false })
-  price: number;
-
   @Column({ type: 'varchar', nullable: false })
   image: string;
 
-  @Column({ type: 'simple-array', nullable: false })
-  dates: string[];
+  @Column({ type: 'int', nullable: false })
+  price: number;
 
-  @Column({ type: 'simple-array', nullable: false })
-  seat_information: string[];
-  // 좌석 정보와 개수를 다 담을 수 있도록 배열을 사용하였습니다.
+  @Column({ type: 'int', nullable: false })
+  seat_num: number;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @OneToMany(() => ShowSeat, (showseat) => showseat.shows)
+  show_seat: ShowSeat[];
+
+  @OneToMany(() => ShowTime, (showtime) => showtime.shows)
+  show_time: ShowTime[];
+
+  @ManyToOne(() => User, (users) => users.shows)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToMany(() => Reservation, (reservation) => reservation.show)
+  reservations: Reservation[];
 }

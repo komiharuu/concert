@@ -1,6 +1,16 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 
 import { Role } from '../types/userRole.type';
+import { Show } from 'src/shows/entities/show.entity';
+import { Reservation } from 'src/reservation/entities/reservation.entity';
 
 @Index('email', ['email'], { unique: true })
 @Entity({
@@ -8,7 +18,7 @@ import { Role } from '../types/userRole.type';
 })
 export class User {
   @PrimaryGeneratedColumn()
-  userId: number;
+  user_id: number;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
@@ -22,6 +32,18 @@ export class User {
   @Column({ type: 'int', default: 1000000, nullable: true })
   point: number;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
+  @Column({ type: 'enum', enum: Role })
   role: Role;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @OneToMany(() => Show, (shows) => shows.user)
+  shows: Show[];
+
+  @OneToMany(() => Reservation, (reservation) => reservation.users)
+  reservation: Reservation[];
 }
