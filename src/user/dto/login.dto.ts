@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsEnum, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsEnum, IsString, Min } from 'class-validator';
 import { Role } from '../types/userRole.type';
 
 export class LoginDto {
@@ -11,6 +11,7 @@ export class LoginDto {
   password: string;
 
   @IsString()
+  @Min(5, { message: '비밀번호는 5자 이상으로 입력해주세요' })
   @IsNotEmpty({ message: '비밀번호를 다시 확인해주세요' })
   passwordConfirm: string;
 
@@ -18,6 +19,6 @@ export class LoginDto {
   @IsNotEmpty({ message: '닉네임을 입력해주세요.' })
   nick_name: string;
 
-  @IsEnum(Role, { message: '역할을 입력해주세요.' })
+  @IsEnum(Role, { message: '올바른 역할을 입력해주세요.' })
   role: Role;
 }

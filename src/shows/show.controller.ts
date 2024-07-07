@@ -17,6 +17,8 @@ import { ShowService } from './shows.service';
 import { Category } from './types/show.type';
 import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo.decorator';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('shows')
 export class ShowController {
@@ -27,30 +29,40 @@ export class ShowController {
   @UseGuards(RolesGuard)
   @UsePipes(ValidationPipe)
   @Post()
-  create(@Body() createShowDto: CreateShowDto, @UserInfo() user_id: User) {
-    return this.showService.createQueryRunner(createShowDto, user_id);
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createShowDto: CreateShowDto,
+    @UserInfo() user_id: User,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.showService.createQueryRunner(createShowDto, user_id, file);
   }
 
+  // 공연 전체조회
   @Get()
   async findAll() {
     return await this.showService.findAllShow();
   }
 
+  // 공연 검색 + 이름, 카테고리
   @Get('/search')
-  async searchShowname(@Query('showname') showname: string) {
-    const searchShow = await this.showService.searchShowName(showname);
+  async searchShowname(
+    @Query('showname') showname: string,
+    @Query('category') category: Category,
+  ) {
+    const searchShow = await this.showService.searchShowName(
+      showname,
+      category,
+    );
     return searchShow;
   }
 
-  @Get('/category')
-  async findShowCategory(@Body('category') category: Category) {
-    const categoryShow = await this.showService.findShowCategory(category);
-    return categoryShow;
-  }
-
+  // 공연 상세조회
   @Get('/:showId')
   async findShowById(@Param('showId') showId: number) {
     const show = await this.showService.findShowById(showId);
     return show;
   }
+
+  // param 여러개 앞의 부분 이름을 다르게 지어라. 경로설정이 중요하다.
 }

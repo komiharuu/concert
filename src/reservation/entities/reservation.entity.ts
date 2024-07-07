@@ -25,6 +25,7 @@ export class Reservation {
 
   @Column({ type: 'int', default: 0 })
   reservation_seat_num: number;
+  // 본인이 예약할 좌석 개수
 
   @CreateDateColumn({ select: false })
   created_at: Date;
@@ -32,11 +33,11 @@ export class Reservation {
   @UpdateDateColumn({ select: false })
   updated_at: Date;
 
-  @ManyToOne(() => Show, (shows) => shows.reservations)
+  @ManyToOne(() => Show, (show) => show.reservations)
   @JoinColumn({ name: 'show_id' })
   show: Show;
 
-  @ManyToOne(() => User, (users) => users.reservation)
+  @ManyToOne(() => User, (user) => user.reservation)
   @JoinColumn({ name: 'user_id' })
-  users: User;
+  user: User;
 }
