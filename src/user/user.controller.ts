@@ -40,7 +40,7 @@ export class UserController {
       loginDto.password,
     );
 
-    return { user };
+    return user;
   }
 
   // 아이디로 유저 정보 조회. 포인트 때문에 jwt 인증 사용

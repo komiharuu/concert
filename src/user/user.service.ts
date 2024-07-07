@@ -95,7 +95,7 @@ export class UserService {
 
     return {
       status: 200,
-      userId: payload.userId,
+      user_id: payload.userId,
       accessToken,
       refreshToken,
     };

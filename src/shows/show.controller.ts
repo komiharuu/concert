@@ -58,9 +58,9 @@ export class ShowController {
   }
 
   // 공연 상세조회
-  @Get('/:showId')
-  async findShowById(@Param('showId') showId: number) {
-    const show = await this.showService.findShowById(showId);
+  @Get('/:show_id')
+  async findShowById(@Param('show_id') show_id: number) {
+    const show = await this.showService.findShowById(show_id);
     return show;
   }
 

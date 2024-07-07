@@ -33,7 +33,7 @@ export class ShowSeat {
   show_id: number;
 
   @Column({ type: 'int', nullable: true, default: 0 })
-  show_seat_num: number;
+  number: number;
   // 지정석 번호
 
   @Column({ type: 'int', nullable: true })
