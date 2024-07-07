@@ -6,12 +6,13 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './user/auth/auth.module';
-import { ShowsModule } from './shows/shows.module';
+import { ShowModule } from './shows/shows.module';
 import { Show } from './shows/entities/show.entity';
 import { ReservationModule } from './reservation/reservation.module';
 import { ShowSeat } from './shows/entities/show-seat.entity';
 import { ShowTime } from './shows/entities/show-time.entity';
 import { Reservation } from './reservation/entities/reservation.entity';
+import { RefreshToken } from './user/entities/refresh-token.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -24,7 +25,7 @@ const typeOrmModuleOptions = {
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
-    entities: [User, Show, ShowSeat, ShowTime, Reservation],
+    entities: [User, Show, ShowSeat, ShowTime, Reservation, RefreshToken],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
@@ -48,7 +49,7 @@ const typeOrmModuleOptions = {
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     UserModule,
     AuthModule,
-    ShowsModule,
+    ShowModule,
     ReservationModule,
   ],
   controllers: [],

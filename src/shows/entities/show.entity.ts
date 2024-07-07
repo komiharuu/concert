@@ -13,6 +13,7 @@ import { User } from 'src/user/entities/user.entity';
 import { ShowSeat } from './show-seat.entity';
 import { ShowTime } from './show-time.entity';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
+import { SeatType } from '../types/show-seat.type';
 
 @Entity({
   name: 'shows',
@@ -37,6 +38,14 @@ export class Show {
   })
   category: Category;
 
+  @Column({
+    type: 'enum',
+    enum: SeatType,
+    nullable: false,
+    default: SeatType.FREESEAT,
+  })
+  grade: SeatType;
+
   @Column({ type: 'varchar', nullable: false })
   location: string;
 
@@ -45,9 +54,10 @@ export class Show {
 
   @Column({ type: 'int', nullable: false })
   price: number;
+  // 자유석 기준 가격
 
   @Column({ type: 'int', nullable: false })
-  seat_num: number;
+  total_seat_num: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -55,14 +65,14 @@ export class Show {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => ShowSeat, (showseat) => showseat.shows)
+  @OneToMany(() => ShowSeat, (show_seat) => show_seat.shows)
   show_seat: ShowSeat[];
 
-  @OneToMany(() => ShowTime, (showtime) => showtime.shows)
+  @OneToMany(() => ShowTime, (show_time) => show_time.shows)
   show_time: ShowTime[];
 
-  @ManyToOne(() => User, (users) => users.shows)
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => User, (user) => user.show)
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: User;
 
   @OneToMany(() => Reservation, (reservation) => reservation.show)

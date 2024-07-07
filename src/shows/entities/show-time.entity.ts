@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Show } from './show.entity';
 
@@ -13,23 +14,24 @@ import { Show } from './show.entity';
 })
 export class ShowTime {
   @PrimaryGeneratedColumn()
-  showTimeId: number;
+  show_time_id: number;
 
-  @Column()
+  @Column({ type: 'int' })
   show_id: number;
 
   @Column({
-    type: 'datetime',
+    type: 'simple-array',
     nullable: false,
   })
-  showDateTime: Date[];
+  show_date_time: Date[];
 
   @CreateDateColumn({ select: false })
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn({ select: false })
-  updatedAt: Date;
+  updated_at: Date;
 
   @ManyToOne(() => Show, (shows) => shows.show_time)
+  @JoinColumn({ name: 'show_id' })
   shows: Show;
 }

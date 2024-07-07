@@ -9,6 +9,7 @@ import { ShowSeat } from './entities/show-seat.entity';
 import { ShowTime } from './entities/show-time.entity';
 import { User } from 'src/user/entities/user.entity';
 import { AwsService } from './aws/aws.service';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class ShowService {
@@ -23,24 +24,31 @@ export class ShowService {
     private awsService: AwsService,
   ) {}
 
-  // 여기 userId 왜안나오나요
-  // 좌석정보랑 날짜는 여러개라 배열로 처리합니다.
-  // save 안쪽에는 create로 만들어진 객체가 있다. create 안에 레포지토리 showid가 필요하다 create 하면서 같이 넣어줘야 한다.
-  async createQueryRunner(CreateShowDto, user: User) {
+  async createQueryRunner(
+    CreateShowDto,
+    user: User,
+    file: Express.Multer.File,
+  ) {
     const {
       show_name,
       explain,
       category,
       location,
-      image,
       price,
-      seat_num,
+      total_seat_num,
       grade,
-      showDateTime,
+      show_date_time,
     } = CreateShowDto;
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.startTransaction();
+    // s3, multer로 공연 이미지 업로드
     try {
+      const { originalname } = file;
+      const fileName = `${originalname}`;
+      const ext = originalname.split('.').pop();
+      const image = await this.awsService.imageUploadToS3(fileName, file, ext);
+
       const show = await queryRunner.manager.save(Show, {
         show_name,
         explain,
@@ -48,22 +56,19 @@ export class ShowService {
         category,
         image,
         price,
-        seat_num,
+        grade,
+        total_seat_num,
         user_id: user.user_id,
       });
-      const showSeat = await queryRunner.manager.save(ShowSeat, {
-        show_id: show.show_id,
-        grade: grade,
-      });
+
       const showTime = await queryRunner.manager.save(ShowTime, {
         show_id: show.show_id,
-        showDateTime: showDateTime,
+        show_date_time: show_date_time,
       });
       await queryRunner.commitTransaction();
       return {
         newshow: {
-          grade: showSeat.grade,
-          showDateTime: showTime.showDateTime,
+          show_date_time: showTime.show_date_time,
           show,
         },
       };
@@ -74,38 +79,31 @@ export class ShowService {
     }
   }
 
-  async searchShowName(show_name: string): Promise<Show[]> {
-    if (_.isNil(show_name)) {
-      throw new NotFoundException('공연을 찾을 수 없습니다.');
+  // 검색 서비스- 이름이나 카테고리
+  async searchShowName(show_name: string, category: Category): Promise<Show[]> {
+    if (_.isNil(show_name || category)) {
+      throw new NotFoundException('공연이름을 찾을 수 없습니다.');
     }
+    // Like: 공연이름 일부만 검색해도 찾을 수 있다.
     return await this.showRepository.find({
-      where: { show_name },
+      where: [{ show_name: Like(`%${show_name}%`) }, { category }],
     });
   }
 
-  // 예매 가능 여부를 확인하려고 좌석 수를 가져옵니다. id로 공연 상세조회
+  // 공연 상세조회 api
   async findShowById(show_id: number) {
     const show = await this.showRepository.findOne({ where: { show_id } });
 
-    // 예매 가능 여부를 if문으로 입력합니다.
-    if (show.seat_num > 0) {
+    // 예매 가능 여부를 확인하려고 좌석 수를 가져옵니다. 예매 가능 여부를 if문으로 입력합니다.
+    if (show.total_seat_num > 0) {
       return { message: '예매 가능합니다.', show };
     } else {
       return { message: '예매할 좌석이 없습니다.' };
     }
   }
 
+  // 전체 목록 조회
   async findAllShow(): Promise<Show[]> {
     return await this.showRepository.find();
-  }
-
-  async findShowCategory(category: Category): Promise<Show[]> {
-    if (!category) {
-      throw new NotFoundException('카테고리에 해당하는 공연이 없습니다.');
-    }
-
-    return await this.showRepository.find({
-      where: { category },
-    });
   }
 }

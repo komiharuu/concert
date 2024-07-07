@@ -16,15 +16,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_SECRET_KEY'),
+      expiresIn: configService.get('JWT_EXPIRATION_TIME'),
     });
   }
 
   async validate(payload: any) {
     const user = await this.userService.findByEmail(payload.email);
+
     if (_.isNil(user)) {
       throw new NotFoundException('해당하는 사용자를 찾을 수 없습니다.');
     }
-
     return user;
   }
 }
