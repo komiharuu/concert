@@ -57,7 +57,7 @@ export class Show {
   // 자유석 기준 가격
 
   @Column({ type: 'int', nullable: false })
-  total_seat_num: number;
+  fixed_num: number;
 
   @CreateDateColumn()
   created_at: Date;

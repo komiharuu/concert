@@ -81,6 +81,7 @@ export class ShowService {
 
   // 검색 서비스- 이름이나 카테고리
   async searchShowName(show_name: string, category: Category): Promise<Show[]> {
+    // 둘중 하나만 알아도 검색 가능함
     if (_.isNil(show_name || category)) {
       throw new NotFoundException('공연이름을 찾을 수 없습니다.');
     }
@@ -95,7 +96,7 @@ export class ShowService {
     const show = await this.showRepository.findOne({ where: { show_id } });
 
     // 예매 가능 여부를 확인하려고 좌석 수를 가져옵니다. 예매 가능 여부를 if문으로 입력합니다.
-    if (show.total_seat_num > 0) {
+    if (show.fixed_num > 0) {
       return { message: '예매 가능합니다.', show };
     } else {
       return { message: '예매할 좌석이 없습니다.' };
