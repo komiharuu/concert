@@ -136,6 +136,7 @@ export class ReservationService {
         user_id: user.user_id,
         showInfo: {
           show_id: show.show_id,
+          show_name: show.show_name,
           explain: show.explain,
           category: show.category,
           location: show.location,
