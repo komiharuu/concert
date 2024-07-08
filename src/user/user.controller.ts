@@ -14,7 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
