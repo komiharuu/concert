@@ -83,7 +83,7 @@ export class ShowService {
   async searchShowName(show_name: string, category: Category): Promise<Show[]> {
     // 둘중 하나만 알아도 검색 가능함
     if (_.isNil(show_name || category)) {
-      throw new NotFoundException('공연이름을 찾을 수 없습니다.');
+      throw new NotFoundException('해당하는 공연을 찾을 수 없습니다.');
     }
     // Like: 공연이름 일부만 검색해도 찾을 수 있다.
     return await this.showRepository.find({
