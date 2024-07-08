@@ -19,10 +19,15 @@ $ npm run start:dev
 
 ## 사용 기술
 
-## Support
+## API 명세서
+https://legendary-tea-bca.notion.site/API-b59d197142a840a38679785149d93fdf?pvs=4
 
-## Stay in touch
+
+
+## ERD 다이어그램
+
+https://drawsql.app/teams/assume-1/diagrams/concert-project
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+
